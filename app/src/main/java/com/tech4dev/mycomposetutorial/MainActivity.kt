@@ -6,12 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +52,8 @@ fun MessageCard(msg : Message ) {
                 1.5.dp, MaterialTheme.colors.secondary, CircleShape
             ))
         Spacer(modifier = Modifier.width(width = 8.dp))
-        Column {
+        var isExpanded by remember{ mutableStateOf(false) }
+        Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(text = msg.author,
             color = MaterialTheme.colors.secondaryVariant,
             style = MaterialTheme.typography.subtitle2)
@@ -58,6 +61,7 @@ fun MessageCard(msg : Message ) {
             androidx.compose.material.Surface(shape = MaterialTheme.shapes.medium, elevation = 1.dp) {
                 Text(text = msg.body,
                     modifier = Modifier.padding(all = 2.dp),
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                     style = MaterialTheme.typography.body2)
             }
 
@@ -66,6 +70,21 @@ fun MessageCard(msg : Message ) {
     
 
 
+}
+@Composable
+fun Conversation(messages : List<Message>){
+    LazyColumn{
+        messages.map { item { MessageCard(msg = it)} }
+
+    }
+
+}
+@Preview
+@Composable
+fun PreviewConversation() {
+    MyComposeTutorialTheme {
+        Conversation(SampleData.conversationSample)
+    }
 }
 
 @Preview(name = "Light Mode")
